@@ -25,6 +25,44 @@ char* id;
 %token ID
 %token EQUAL
 %token LET
+%token OPENPAREN
+%token CLOSEPAREN
+%token SEMICOLON
+%token NEWLINE
+%token ASSIGNMENT
+
+%token KARRAY
+%token KBEGIN
+%token KCHR
+%token KCONST
+%token KDO
+%token KDOWNTO
+%token KELSE
+%token KELSEIF
+%token KEND
+%token KFOR
+%token KFORWARD
+%token KFUNCTION
+%token KIF
+%token KOF
+%token KORD
+%token KPRED
+%token KPROCEDURE
+%token KREAD
+%token KRECORD
+%token KREF
+%token KREPEAT
+%token KRETURN
+%token KSTOP
+%token KSUCC
+%token KTHEN
+%token KTO
+%token KTYPE
+%token KUNTIL
+%token KVAR
+%token KWHILE
+%token KWRITE
+
 
 %type <val> NUMBER
 %type <val> Expression
