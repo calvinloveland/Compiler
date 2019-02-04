@@ -12,16 +12,26 @@ char [^]+-*/&|~=<>.,:;()[%"]
 
 %%
 
-"+" {return ADD;}
-"-" {return SUB;}
-"*" {return MULT;}
-"/" {return DIV;}
-"(" {return OPENPAREN;}
-")" {return CLOSEPAREN;}
-"\n" {return NEWLINE;}
-";" {return SEMICOLON;}
-"=" {return EQUAL;}
-":=" {return ASSIGNMENT;}
+"+" {return SPLUS;}
+"-" {return SMINUS;}
+"*" {return SMULT;}
+"/" {return SDIV;}
+"(" {return SOPENPAREN;}
+")" {return SCLOSEPAREN;}
+"[" {return SOPENSQUARE;}
+"]" {return SCLOSESQUARE;}
+"\n" {return SNEWLINE;}
+";" {return SSEMICOLON;}
+"=" {return SEQUAL;}
+"." {return SPERIOD;}
+"," {return SCOMMA;}
+"|" {return SPIPE;}
+"&" {return SAMPERSAND;}
+"<" {return SOPENANGLE;}
+">" {return SCLOSEANGLE;}
+"%" {return SPERCENTAGE;}
+"~" {return STILDE;}
+":" {return SCOLON}
 
 "ARRAY" {return KARRAY;}
 "array" {return KARRAY;}
@@ -86,8 +96,8 @@ char [^]+-*/&|~=<>.,:;()[%"]
 "WRITE" {return KWRITE;}
 "write" {return KWRITE;}
 
-[a-z] {yylval.id = strdup(yytext);return ID;}
-_[a-zA-Z]+ {yylval.id = strdup(yytext+1);return ID;}
+[a-z] {yylval.id = strdup(yytext);return IDENTIFIER;}
+_[a-zA-Z]+ {yylval.id = strdup(yytext+1);return IDENTIFIER;}
 [ \t] {}
 
 [0-9]*\.[0-9]* {yylval.val = atof(yytext);return NUMBER;}
