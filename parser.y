@@ -14,6 +14,11 @@ float val;
 char* id;
 }
 
+%token SNOTEQUAL
+%token SLESSEQUAL
+%token SGREATEREQUAL
+%token SASSIGNMENT
+
 %token SPLUS
 %token SMINUS
 %token SMULT
@@ -69,10 +74,26 @@ char* id;
 %token KWHILE
 %token KWRITE
 
+%token IDENTIFIER
+%token NUMBER
 
-%type <val> NUMBER
-%type <val> Expression
-%type <id> IDENTIFIER
+%left SMULT
+%left SDIV
+%left SPLUS
+%left SMINUS
+%left SPERCENT
+%left SAMPERSAND
+%left SPIPE
+
+%nonassoc SNOTEQUAL
+%nonassoc SLESSEQUAL
+%nonassoc SGREATEREQUAL
+%nonassoc SOPENANGLE
+%nonassoc SCLOSEANGLE
+%nonassoc SEQUAL
+
+%right UNARYMINUS
+%right STILDE
 
 %%
 
@@ -88,22 +109,11 @@ OptSubConstantDecl : SubConstantDecl
 		   |
 		   ;
 
-OptTypeDecl : KTYPE SubTypeDecl
-	    |
-	    ;
-	   
-SubTypeDecl : IDENTIFIER SEQUAL Type SSEMICOLON OptSubTypeDecl {std::cerr<<"TypeDecl";}
-	    ;
-
-OptSubTypeDecl : SubTypeDecl
-	       |
-	       ;
-
 OptVarDecl : KVAR SubVarDecl
 	   |
 	   ;
 
-SubVarDecl : IdentifierList SCOLON Type SSEMICOLON OptSubVarDecl {std::cerr<<"VarDecl"};
+SubVarDecl : IdentifierList SCOLON Type SSEMICOLON OptSubVarDecl {std::cerr<<"VarDecl";};
 
 OptSubVarDecl : SubVarDecl
 	      |
@@ -138,12 +148,12 @@ Body : OptConstantDecl OptTypeDecl OptVarDecl Block;
 
 Block : KBEGIN StatementSequence KEND;
 
-OptTypeDecl : KTYPE IDENTIFIER SEQUAL Type SSEMICOLON OptSubTypeDecl
+OptTypeDecl : KTYPE SubTypeDecl
 	    |
 	    ;
 
-OptSubTypeDecl : IDENTIFIER SEQUAL Type SSEMICOLON OptSubTypeDecl
-	       |
+SubTypeDecl : IDENTIFIER SEQUAL Type SSEMICOLON SubTypeDecl
+	       | IDENTIFIER SEQUAL Type SSEMICOLON
 	       ;
 
 Type : SimpleType
@@ -183,11 +193,12 @@ Statement : Assignment
 	  | WriteStatement
 	  | ProcedureCall
 	  | NullStatement
+	  | WhileStatement
 	  ;
 
-Assignment : LValue SCOLON SEQUAL Expression;
+Assignment : LValue SASSIGNMENT Expression;
 
-IfStatement : KIF Expression KTHEN StatementSequence OptElseIf OptElse KEND
+IfStatement : KIF Expression KTHEN StatementSequence OptElseIf OptElse KEND;
 
 OptElseIf : KELSEIF Expression KTHEN StatementSequence OptElseIf
 	  |
@@ -201,7 +212,7 @@ WhileStatement : KWHILE Expression KDO StatementSequence KEND;
 
 RepeatStatement : KREPEAT StatementSequence KUNTIL Expression;
 
-ForStatement : KFOR IDENTIFIER SCOLON SEQUAL Expression ToOrDownto Expression KDO StatementSequence KEND;
+ForStatement : KFOR IDENTIFIER SASSIGNMENT Expression ToOrDownto Expression KDO StatementSequence KEND;
 
 ToOrDownto : KTO
 	   | KDOWNTO
@@ -219,21 +230,21 @@ ProcedureCall : IDENTIFIER SOPENPAREN OptExpression SCLOSEPAREN;
 
 NullStatement :;
 
-Expression : Expression SPIPE Expression
-	   | Expression SAMPERSAND Expression
-	   | Expression SEQUAL Expression
-	   | Expression SOPENANGLE SCLOSEANGLE Expression
-	   | Expression SOPENANGLE SEQUAL Expression
-	   | Expression SCLOSEANGLE SEQUAL Expression
-	   | Expression SOPENANGLE Expression
-	   | Expression SCLOSEANGLE Expression
+Expression : SMINUS Expression %prec UNARYMINUS
+	   | Expression SPERCENTAGE Expression
+	   | Expression SDIV Expression
+	   | Expression SMULT Expression
 	   | Expression SPLUS Expression
 	   | Expression SMINUS Expression
-	   | Expression SMULT Expression
-	   | Expression SDIV Expression
-	   | Expression SPERCENTAGE Expression
+	   | Expression SEQUAL Expression
+	   | Expression SNOTEQUAL Expression
+	   | Expression SGREATEREQUAL Expression
+	   | Expression SLESSEQUAL Expression
+	   | Expression SOPENANGLE Expression
+	   | Expression SCLOSEANGLE Expression
 	   | STILDE Expression
-	   | SMINUS Expression
+	   | Expression SAMPERSAND Expression
+	   | Expression SPIPE Expression
 	   | SOPENPAREN Expression SCLOSEPAREN
 	   | IDENTIFIER SOPENPAREN Expression OptAddExpression SCLOSEPAREN
 	   | KCHR SOPENPAREN Expression SCLOSEPAREN
@@ -241,6 +252,7 @@ Expression : Expression SPIPE Expression
 	   | KPRED SOPENPAREN Expression SCLOSEPAREN
 	   | KSUCC SOPENPAREN Expression SCLOSEPAREN
 	   | LValue
+	   ;
 
 OptLValue : LValue
 	  |

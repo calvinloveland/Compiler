@@ -1,6 +1,6 @@
 %{
 #include <cstdlib>
-
+#include <iostream>
 #include "parser.hpp"
 %}
 
@@ -9,8 +9,16 @@
 letter [a-zA-Z]
 digit [0-9]
 char [^]+-*/&|~=<>.,:;()[%"]
+str [a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]
 
 %%
+
+
+"<>" {return SNOTEQUAL;}
+"<=" {return SLESSEQUAL;}
+">=" {return SGREATEREQUAL;}
+":=" {return SASSIGNMENT;}
+
 
 "+" {return SPLUS;}
 "-" {return SMINUS;}
@@ -20,7 +28,6 @@ char [^]+-*/&|~=<>.,:;()[%"]
 ")" {return SCLOSEPAREN;}
 "[" {return SOPENSQUARE;}
 "]" {return SCLOSESQUARE;}
-"\n" {return SNEWLINE;}
 ";" {return SSEMICOLON;}
 "=" {return SEQUAL;}
 "." {return SPERIOD;}
@@ -31,79 +38,50 @@ char [^]+-*/&|~=<>.,:;()[%"]
 ">" {return SCLOSEANGLE;}
 "%" {return SPERCENTAGE;}
 "~" {return STILDE;}
-":" {return SCOLON}
+":" {return SCOLON;}
 
-"ARRAY" {return KARRAY;}
-"array" {return KARRAY;}
-"BEGIN" {return KBEGIN;}
-"begin" {return KBEGIN;}
-"CHR" {return KCHR;}
-"chr" {return KCHR;}
-"CONST" {return KCONST;}
-"const" {return KCONST;}
-"DO" {return KDO;}
-"do" {return KDO;}
-"DOWNTO" {return KDOWNTO;}
-"downto" {return KDOWNTO;}
-"ELSE" {return KELSE;}
-"else" {return KELSE;}
-"ELSEIF" {return KELSEIF;}
-"elseif" {return KELSEIF;}
-"END" {return KEND;}
-"end" {return KEND;}
-"FOR" {return KFOR;}
-"for" {return KFOR;}
-"FORWARD" {return KFORWARD;}
-"forward" {return KFORWARD;}
-"FUNCTION" {return KFUNCTION;}
-"function" {return KFUNCTION;}
-"IF" {return KIF;}
-"if" {return KIF;}
-"OF" {return KOF;}
-"of" {return KOF;}
-"ORD" {return KORD;}
-"ord" {return KORD;}
-"PRED" {return KPRED;}
-"pred" {return KPRED;}
-"PROCEDURE" {return KPROCEDURE;}
-"procedure" {return KPROCEDURE;}
-"READ" {return KREAD;}
-"read" {return KREAD;}
-"RECORD" {return KRECORD;}
-"record" {return KRECORD;}
-"REF" {return KREF;}
-"ref" {return KREF;}
-"REPEAT" {return KREPEAT;}
-"repeat" {return KREPEAT;}
-"RETURN" {return KRETURN;}
-"return" {return KRETURN;}
-"STOP" {return KSTOP;}
-"stop" {return KSTOP;}
-"SUCC" {return KSUCC;}
-"succ" {return KSUCC;}
-"THEN" {return KTHEN;}
-"then" {return KTHEN;}
-"TO" {return KTO;}
-"to" {return KTO;}
-"TYPE" {return KTYPE;}
-"type" {return KTYPE;}
-"UNTIL" {return KUNTIL;}
-"until" {return KUNTIL;}
-"VAR" {return KVAR;}
-"var" {return KVAR;}
-"WHILE" {return KWHILE;}
-"while" {return KWHILE;}
-"WRITE" {return KWRITE;}
-"write" {return KWRITE;}
+(ARRAY|array) {std::cerr << "Keyword: ARRAY\n" ;return KARRAY;}
+(BEGIN|begin) {std::cerr << "Keyword: BEGIN\n" ;return KBEGIN;}
+(CHR|chr) {std::cerr << "Keyword: CHR\n" ;return KCHR;}
+(CONST|const) {std::cerr << "Keyword: CONST\n" ;return KCONST;}
+(DO|do) {std::cerr << "Keyword: DO\n" ;return KDO;}
+(DOWNTO|downto) {std::cerr << "Keyword: DOWNTO\n" ;return KDOWNTO;}
+(ELSE|else) {std::cerr << "Keyword: ELSE\n" ;return KELSE;}
+(ELSEIF|elseif) {std::cerr << "Keyword: ELSEIF\n" ;return KELSEIF;}
+(END|end) {std::cerr << "Keyword: END\n" ;return KEND;}
+(FOR|for) {std::cerr << "Keyword: FOR\n" ;return KFOR;}
+(FORWARD|forward) {std::cerr << "Keyword: FORWARD\n" ;return KFORWARD;}
+(FUNCTION|function) {std::cerr << "Keyword: FUNCTION\n" ;return KFUNCTION;}
+(IF|if) {std::cerr << "Keyword: IF\n" ;return KIF;}
+(OF|of) {std::cerr << "Keyword: OF\n" ;return KOF;}
+(ORD|ord) {std::cerr << "Keyword: ORD\n" ;return KORD;}
+(PRED|pred) {std::cerr << "Keyword: PRED\n" ;return KPRED;}
+(PROCEDURE|procedure) {std::cerr << "Keyword: PROCEDURE\n" ;return KPROCEDURE;}
+(READ|read) {std::cerr << "Keyword: READ\n" ;return KREAD;}
+(RECORD|record) {std::cerr << "Keyword: RECORD\n" ;return KRECORD;}
+(REF|ref) {std::cerr << "Keyword: REF\n" ;return KREF;}
+(REPEAT|repeat) {std::cerr << "Keyword: REPEAT\n" ;return KREPEAT;}
+(RETURN|return) {std::cerr << "Keyword: RETURN\n" ;return KRETURN;}
+(STOP|stop) {std::cerr << "Keyword: STOP\n" ;return KSTOP;}
+(SUCC|succ) {std::cerr << "Keyword: SUCC\n" ;return KSUCC;}
+(THEN|then) {std::cerr << "Keyword: THEN\n" ;return KTHEN;}
+(TO|to) {std::cerr << "Keyword: TO\n" ;return KTO;}
+(TYPE|type) {std::cerr << "Keyword: TYPE\n" ;return KTYPE;}
+(UNTIL|until) {std::cerr << "Keyword: UNTIL\n" ;return KUNTIL;}
+(VAR|var) {std::cerr << "Keyword: VAR\n" ;return KVAR;}
+(WHILE|while) {std::cerr << "Keyword: WHILE\n" ;return KWHILE;}
+(WRITE|write) {std::cerr << "Keyword: WRITE\n" ;return KWRITE;}
 
-[a-z] {yylval.id = strdup(yytext);return IDENTIFIER;}
-_[a-zA-Z]+ {yylval.id = strdup(yytext+1);return IDENTIFIER;}
-[ \t] {}
+[a-zA-Z][a-zA-Z0-9]* {std::cerr << "Identifier\n"; yylval.id = strdup(yytext+1);return IDENTIFIER;}
 
-[0-9]*\.[0-9]* {yylval.val = atof(yytext);return NUMBER;}
-[0-9]+ {yylval.val = atof(yytext);return NUMBER;}
+[0-9]*\.[0-9]* {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
+[0-9]+ {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
 
+\"[a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]*\" {std::cerr << "STRING";}
 
+[ \t]+ {std::cerr<<"Whitespace\n";}
+"\n" {std::cerr<<"Newline\n";}
 
+. {std::cerr << "BROKE" << "|" << yytext << "|\n";}
 
 %%
