@@ -6,10 +6,7 @@
 
 %option noyywrap
 
-letter [a-zA-Z]
-digit [0-9]
-char [^]+-*/&|~=<>.,:;()[%"]
-str [a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]
+
 
 %%
 
@@ -72,12 +69,15 @@ str [a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]
 (WHILE|while) {std::cerr << "Keyword: WHILE\n" ;return KWHILE;}
 (WRITE|write) {std::cerr << "Keyword: WRITE\n" ;return KWRITE;}
 
-[a-zA-Z][a-zA-Z0-9]* {std::cerr << "Identifier\n"; yylval.id = strdup(yytext+1);return IDENTIFIER;}
-
+0[0-7]+          {return NUMBER;}
+0x[0-9a-fA-F]+ {return NUMBER;}
 [0-9]*\.[0-9]* {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
 [0-9]+ {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
 
+\'([^']|\\n|\\r|\\t)\' {std::cerr << "CHARACTER\n";return CHARACTER;}
 \"[a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]*\" {std::cerr << "STRING\n";return STRING;}
+
+[a-zA-Z][a-zA-Z0-9_]* {std::cerr << "Identifier: "<< yytext << "\n"; return IDENTIFIER;}
 
 [ \t]+ {std::cerr<<"Whitespace\n";}
 \n {std::cerr<<"Newline\n";}

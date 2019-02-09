@@ -75,6 +75,7 @@ char* id;
 %token KWRITE
 
 %token IDENTIFIER
+%token CHARACTER
 %token STRING
 %token NUMBER
 
@@ -121,8 +122,8 @@ OptSubVarDecl : SubVarDecl
 	      |
 	      ;
 
-OptFuncOrProcDecl : FunctionDecl
- 	          | ProcedureDecl
+OptFuncOrProcDecl : FunctionDecl OptFuncOrProcDecl
+ 	          | ProcedureDecl OptFuncOrProcDecl
 		  |
 	          ;
 
@@ -134,13 +135,13 @@ FunctionDecl : KFUNCTION IDENTIFIER SOPENPAREN FormalParameters SCLOSEPAREN SCOL
 	     | KFUNCTION IDENTIFIER SOPENPAREN FormalParameters SCLOSEPAREN SCOLON Type SSEMICOLON Body SSEMICOLON
 	     ;
 
-FormalParameters : VarOrRef IdentifierList SCOLON Type OptFormalParameter
+FormalParameters : VarOrRef IdentifierList SCOLON Type OptFormalParameters
 		 |
 		 ;
 		
-OptFormalParameter : SSEMICOLON VarOrRef IdentifierList SCOLON Type
-		   | OptFormalParameter OptFormalParameter
-		   ;
+OptFormalParameters : SSEMICOLON VarOrRef IdentifierList SCOLON Type OptFormalParameters
+		    |
+		    ;
 
 VarOrRef : KVAR
 	 | KREF
@@ -227,7 +228,7 @@ ReadStatement : KREAD SOPENPAREN LValue OptLValue SCLOSEPAREN;
 
 WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN {std::cerr<<"WriteStatement\n";};
 
-ProcedureCall : IDENTIFIER SOPENPAREN OptExpression SCLOSEPAREN;
+ProcedureCall : IDENTIFIER SOPENPAREN OptExpressions SCLOSEPAREN;
 
 NullStatement : {std::cerr<<"NullStatement\n";};
 
@@ -247,25 +248,29 @@ Expression : SMINUS Expression %prec UNARYMINUS
 	   | Expression SAMPERSAND Expression
 	   | Expression SPIPE Expression
 	   | SOPENPAREN Expression SCLOSEPAREN
-	   | IDENTIFIER SOPENPAREN Expression OptAddExpression SCLOSEPAREN
+	   | IDENTIFIER SOPENPAREN OptExpressions SCLOSEPAREN
 	   | KCHR SOPENPAREN Expression SCLOSEPAREN
 	   | KORD SOPENPAREN Expression SCLOSEPAREN
 	   | KPRED SOPENPAREN Expression SCLOSEPAREN
 	   | KSUCC SOPENPAREN Expression SCLOSEPAREN
 	   | LValue
 	   | STRING
-	   ;
+	   | CHARACTER
+	   | NUMBER
+	    {std::cerr<<"Expression\n";};
 
-OptLValue : LValue
+OptLValue : SCOMMA LValue OptLValue
 	  |
 	  ;
 
-LValue : IDENTIFIER OptIdOrExpression;
 
-OptIdOrExpression : SPERIOD IDENTIFIER
-		  | SOPENSQUARE Expression SCLOSESQUARE
+OptIdOrExpression : SPERIOD IDENTIFIER OptIdOrExpression
+		  | SOPENSQUARE Expression SCLOSESQUARE OptIdOrExpression
 		  | 
 		  ;
+OptExpressions : Expression OptAddExpression
+	       |
+	       ;
 
 OptExpression : Expression
 	      |
@@ -274,6 +279,8 @@ OptExpression : Expression
 OptAddExpression : SCOMMA Expression OptAddExpression
 		 |
 		 ;
+
+LValue : IDENTIFIER OptIdOrExpression;
 
 %%
 
