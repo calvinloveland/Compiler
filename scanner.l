@@ -77,10 +77,10 @@ str [a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]
 [0-9]*\.[0-9]* {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
 [0-9]+ {std::cerr << "Number\n"; yylval.val = atof(yytext);return NUMBER;}
 
-\"[a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]*\" {std::cerr << "STRING";}
+\"[a-zA-Z0-9~`!@'#$%^&*()_+=\-\[\]{}\\\/><,.:;| ]*\" {std::cerr << "STRING\n";return STRING;}
 
 [ \t]+ {std::cerr<<"Whitespace\n";}
-"\n" {std::cerr<<"Newline\n";}
+\n {std::cerr<<"Newline\n";}
 
 . {std::cerr << "BROKE" << "|" << yytext << "|\n";}
 

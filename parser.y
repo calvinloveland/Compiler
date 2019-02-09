@@ -75,6 +75,7 @@ char* id;
 %token KWRITE
 
 %token IDENTIFIER
+%token STRING
 %token NUMBER
 
 %left SMULT
@@ -97,12 +98,13 @@ char* id;
 
 %%
 
-Program : OptConstantDecl OptTypeDecl OptVarDecl FuncOrProcDecl Block SPERIOD;
+Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n";};
 
 OptConstantDecl : KCONST SubConstantDecl
+		|
 		;
 	       
-SubConstantDecl : IDENTIFIER SEQUAL Expression SSEMICOLON OptSubConstantDecl {std::cerr << "OptConstDecl";}
+SubConstantDecl : IDENTIFIER SEQUAL Expression SSEMICOLON OptSubConstantDecl {std::cerr << "OptConstDecl\n";}
 		;
 
 OptSubConstantDecl : SubConstantDecl
@@ -113,15 +115,16 @@ OptVarDecl : KVAR SubVarDecl
 	   |
 	   ;
 
-SubVarDecl : IdentifierList SCOLON Type SSEMICOLON OptSubVarDecl {std::cerr<<"VarDecl";};
+SubVarDecl : IdentifierList SCOLON Type SSEMICOLON OptSubVarDecl {std::cerr<<"VarDecl\n";};
 
 OptSubVarDecl : SubVarDecl
 	      |
 	      ;
 
-FuncOrProcDecl : FunctionDecl
-	       | ProcedureDecl
-	       ;
+OptFuncOrProcDecl : FunctionDecl
+ 	          | ProcedureDecl
+		  |
+	          ;
 
 ProcedureDecl : KPROCEDURE IDENTIFIER SOPENPAREN FormalParameters SCLOSEPAREN SSEMICOLON KFORWARD SSEMICOLON
 	      | KPROCEDURE IDENTIFIER SOPENPAREN FormalParameters SCLOSEPAREN SSEMICOLON Body SSEMICOLON
@@ -146,7 +149,7 @@ VarOrRef : KVAR
 
 Body : OptConstantDecl OptTypeDecl OptVarDecl Block;
 
-Block : KBEGIN StatementSequence KEND;
+Block : KBEGIN StatementSequence KEND {std::cerr<<"Block\n";};
 
 OptTypeDecl : KTYPE SubTypeDecl
 	    |
@@ -177,11 +180,9 @@ OptIdentifier : SCOMMA IDENTIFIER OptIdentifier
 	      |
 	      ;
 
-StatementSequence : Statement OptStatement;
-
-OptStatement : SSEMICOLON Statement OptStatement
-	     |
-	     ;
+StatementSequence : Statement
+		  | Statement SSEMICOLON StatementSequence
+		  ;
 
 Statement : Assignment
 	  | IfStatement
@@ -194,7 +195,7 @@ Statement : Assignment
 	  | ProcedureCall
 	  | NullStatement
 	  | WhileStatement
-	  ;
+	  {std::cerr << "Statement\n";};
 
 Assignment : LValue SASSIGNMENT Expression;
 
@@ -224,11 +225,11 @@ ReturnStatement : KRETURN OptExpression;
 
 ReadStatement : KREAD SOPENPAREN LValue OptLValue SCLOSEPAREN;
 
-WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN;
+WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN {std::cerr<<"WriteStatement\n";};
 
 ProcedureCall : IDENTIFIER SOPENPAREN OptExpression SCLOSEPAREN;
 
-NullStatement :;
+NullStatement : {std::cerr<<"NullStatement\n";};
 
 Expression : SMINUS Expression %prec UNARYMINUS
 	   | Expression SPERCENTAGE Expression
@@ -252,6 +253,7 @@ Expression : SMINUS Expression %prec UNARYMINUS
 	   | KPRED SOPENPAREN Expression SCLOSEPAREN
 	   | KSUCC SOPENPAREN Expression SCLOSEPAREN
 	   | LValue
+	   | STRING
 	   ;
 
 OptLValue : LValue
