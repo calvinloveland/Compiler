@@ -2,7 +2,9 @@
 #include <iostream>
 #include <map>
 
-#include "expressions/Expressions.hpp"
+#include "ast/expressions/Expression.hpp"
+#include "ast/expressions/Factory.hpp"
+#include "ast/Node.hpp"
 #include "symbol_table.hpp"
 
 extern int yylex();
@@ -13,6 +15,7 @@ void yyerror(const char*);
 {
 float val;
 char* id;
+Node* node_ptr;
 }
 
 %token SNOTEQUAL
@@ -98,11 +101,28 @@ char* id;
 %right UNARYMINUS
 %right STILDE
 
+%type <node_ptr> Program
+%type <node_ptr> Block
+%type <node_ptr> StatementSequence
+%type <node_ptr> Statement
+%type <node_ptr> Expression
+%type <node_ptr> Assignment
+%type <node_ptr> IfStatement
+%type <node_ptr> RepeatStatement
+%type <node_ptr> ForStatement
+%type <node_ptr> StopStatement 
+%type <node_ptr> ReturnStatement
+%type <node_ptr> ReadStatement
+%type <node_ptr> WriteStatement
+%type <node_ptr> ProcedureCall
+%type <node_ptr> NullStatement
+%type <node_ptr> WhileStatement
+
 %%
 
-Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n";};
+Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n"; $$ = new Program($5);};
 
-OptConstantDecl : KCONST SubConstantDecl
+OptConstantDecl : KCONST SubConstantDecl {}
 		|
 		;
 	       
@@ -151,7 +171,7 @@ VarOrRef : KVAR
 
 Body : OptConstantDecl OptTypeDecl OptVarDecl Block;
 
-Block : KBEGIN StatementSequence KEND {std::cerr<<"Block\n";};
+Block : KBEGIN StatementSequence KEND {std::cerr<<"Block\n"; $$ = new Block($2);};
 
 OptTypeDecl : KTYPE SubTypeDecl
 	    |
@@ -182,22 +202,22 @@ OptIdentifier : SCOMMA IDENTIFIER OptIdentifier
 	      |
 	      ;
 
-StatementSequence : Statement
-		  | Statement SSEMICOLON StatementSequence
+StatementSequence : Statement {$$ = $1;}
+		  | Statement SSEMICOLON StatementSequence {$$ = MakeStatementSequence($1,$3);}
 		  ;
 
 Statement : Assignment
 	  | IfStatement
 	  | RepeatStatement
 	  | ForStatement
-	  | StopStatement
+	  | StopStatement 
 	  | ReturnStatement
 	  | ReadStatement
 	  | WriteStatement
 	  | ProcedureCall
 	  | NullStatement
 	  | WhileStatement
-	  {std::cerr << "Statement\n";};
+	  {std::cerr << "Statement\n"; $$ = $1;};
 
 Assignment : LValue SASSIGNMENT Expression;
 
@@ -221,11 +241,11 @@ ToOrDownto : KTO
 	   | KDOWNTO
 	   ;
 
-StopStatement : KSTOP;
+StopStatement : KSTOP {$$ = new Stop()};
 
 ReturnStatement : KRETURN OptExpression;
 
-ReadStatement : KREAD SOPENPAREN LValue OptLValue SCLOSEPAREN;
+ReadStatement : KREAD SOPENPAREN LValue OptLValue SCLOSEPAREN ;
 
 WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN {std::cerr<<"WriteStatement\n";};
 
@@ -233,14 +253,14 @@ ProcedureCall : IDENTIFIER SOPENPAREN OptExpressions SCLOSEPAREN;
 
 NullStatement : {std::cerr<<"NullStatement\n";};
 
-Expression : SMINUS Expression %prec UNARYMINUS
-	   | Expression SPERCENTAGE Expression
-	   | Expression SDIV Expression
-	   | Expression SMULT Expression
-	   | Expression SPLUS Expression
-	   | Expression SMINUS Expression
-	   | Expression SEQUAL Expression
-	   | Expression SNOTEQUAL Expression
+Expression : SMINUS Expression %prec UNARYMINUS {$$ = new UnaryMinus($2);}
+	   | Expression SPERCENTAGE Expression 
+	   | Expression SDIV Expression {$$ = makeDiv($1,$3);}
+	   | Expression SMULT Expression {$$ = makeMult($1,$3);}
+	   | Expression SPLUS Expression {$$ = makeAdd($1,$3);}
+	   | Expression SMINUS Expression {$$ = makeSub($1, $3);}
+	   | Expression SEQUAL Expression {$$ = new Equal($1,$3);}
+	   | Expression SNOTEQUAL Expression {$$ = new NotEqual($1,$3);}
 	   | Expression SGREATEREQUAL Expression
 	   | Expression SLESSEQUAL Expression
 	   | Expression SOPENANGLE Expression
