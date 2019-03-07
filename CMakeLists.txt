@@ -13,10 +13,20 @@ set(EXTRA_COMPILE_FLAGS "-g3 -std=c++14")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 
+file(GLOB shared_src
+     "shared/*.hpp"
+     "shared/*.cpp"
+)
+file(GLOB expressions_src
+     "expressions/*.hpp"
+     "expressions/*.cpp"
+)
 set(compiler_srcs
   main.cpp
   symbol_table.hpp
   symbol_table.cpp
+  ${expressions_src}
+  ${shared_src}
   ${BISON_Parser_OUTPUTS}
   ${FLEX_Scanner_OUTPUTS}
 )

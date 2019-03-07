@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 
+#include "expressions/Expressions.hpp"
 #include "symbol_table.hpp"
 
 extern int yylex();
