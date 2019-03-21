@@ -2,6 +2,9 @@
 
 #include "Expression.hpp"
 
-class Multiplication : public Expression
-{
-};
+namespace ast {
+    class Multiplication : public Expression {
+    public:
+        Multiplication(Expression *l, Expression *r) : Expression(l, r) {}
+    };
+}

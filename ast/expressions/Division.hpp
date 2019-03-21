@@ -2,6 +2,9 @@
 
 #include "Expression.hpp"
 
-class Division : public Expression
-{
-};
+namespace ast {
+    class Division : public Expression {
+    public:
+        Division(Expression *l, Expression *r) : Expression(l, r) {}
+    };
+}

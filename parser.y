@@ -6,6 +6,14 @@
 #include "ast/expressions/Factory.hpp"
 #include "ast/Node.hpp"
 #include "symbol_table.hpp"
+#include "ast/Program.hpp"
+#include "ast/Block.hpp"
+#include "ast/StatementSequence.hpp"
+#include "ast/statements/Stop.hpp"
+#include "ast/expressions/UnaryMinus.hpp"
+#include "ast/expressions/Equal.hpp"
+#include "ast/expressions/NotEqual.hpp"
+
 
 extern int yylex();
 void yyerror(const char*);
@@ -118,9 +126,11 @@ Node* node_ptr;
 %type <node_ptr> NullStatement
 %type <node_ptr> WhileStatement
 
+
+
 %%
 
-Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n"; $$ = new Program($5);};
+Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n"; $$ = new ast::Program($5);};
 
 OptConstantDecl : KCONST SubConstantDecl {}
 		|
@@ -171,7 +181,7 @@ VarOrRef : KVAR
 
 Body : OptConstantDecl OptTypeDecl OptVarDecl Block;
 
-Block : KBEGIN StatementSequence KEND {std::cerr<<"Block\n"; $$ = new Block($2);};
+Block : KBEGIN StatementSequence KEND {std::cerr<<"Block\n"; $$ = new ast::Block($2);};
 
 OptTypeDecl : KTYPE SubTypeDecl
 	    |
@@ -203,7 +213,7 @@ OptIdentifier : SCOMMA IDENTIFIER OptIdentifier
 	      ;
 
 StatementSequence : Statement {$$ = $1;}
-		  | Statement SSEMICOLON StatementSequence {$$ = MakeStatementSequence($1,$3);}
+		  | Statement SSEMICOLON StatementSequence {$$ = ast::MakeStatementSequence($1,$3);}
 		  ;
 
 Statement : Assignment
@@ -241,7 +251,7 @@ ToOrDownto : KTO
 	   | KDOWNTO
 	   ;
 
-StopStatement : KSTOP {$$ = new Stop()};
+StopStatement : KSTOP {$$ = new ast::Stop();};
 
 ReturnStatement : KRETURN OptExpression;
 
@@ -253,14 +263,14 @@ ProcedureCall : IDENTIFIER SOPENPAREN OptExpressions SCLOSEPAREN;
 
 NullStatement : {std::cerr<<"NullStatement\n";};
 
-Expression : SMINUS Expression %prec UNARYMINUS {$$ = new UnaryMinus($2);}
+Expression : SMINUS Expression %prec UNARYMINUS {$$ = new ast::UnaryMinus(dynamic_cast<ast::Expression*>($2));}
 	   | Expression SPERCENTAGE Expression 
-	   | Expression SDIV Expression {$$ = makeDiv($1,$3);}
-	   | Expression SMULT Expression {$$ = makeMult($1,$3);}
-	   | Expression SPLUS Expression {$$ = makeAdd($1,$3);}
-	   | Expression SMINUS Expression {$$ = makeSub($1, $3);}
-	   | Expression SEQUAL Expression {$$ = new Equal($1,$3);}
-	   | Expression SNOTEQUAL Expression {$$ = new NotEqual($1,$3);}
+	   | Expression SDIV Expression {$$ = ast::makeDiv(dynamic_cast<ast::Expression*>($1),dynamic_cast<ast::Expression*>($3));}
+	   | Expression SMULT Expression {$$ = ast::makeMult(dynamic_cast<ast::Expression*>($1),dynamic_cast<ast::Expression*>($3));}
+	   | Expression SPLUS Expression {$$ = ast::makeAdd(dynamic_cast<ast::Expression*>($1),dynamic_cast<ast::Expression*>($3));}
+	   | Expression SMINUS Expression {$$ = ast::makeSub(dynamic_cast<ast::Expression*>($1), dynamic_cast<ast::Expression*>($3));}
+	   | Expression SEQUAL Expression {$$ = new ast::Equal(dynamic_cast<ast::Expression*>($1),dynamic_cast<ast::Expression*>($3));}
+	   | Expression SNOTEQUAL Expression {$$ = new ast::NotEqual(dynamic_cast<ast::Expression*>($1),dynamic_cast<ast::Expression*>($3));}
 	   | Expression SGREATEREQUAL Expression
 	   | Expression SLESSEQUAL Expression
 	   | Expression SOPENANGLE Expression

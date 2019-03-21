@@ -2,6 +2,9 @@
 
 #include "Expression.hpp"
 
-class Subtraction : public Expression
-{
-};
+namespace ast {
+    class Subtraction : public Expression {
+    public:
+        Subtraction(Expression *l, Expression *r) : Expression(l, r) {}
+    };
+}

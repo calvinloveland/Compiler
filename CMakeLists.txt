@@ -17,9 +17,13 @@ file(GLOB shared_src
      "shared/*.hpp"
      "shared/*.cpp"
 )
+file(GLOB ast_src
+        "ast/*.hpp"
+        "ast/*.cpp"
+        )
 file(GLOB expressions_src
-     "expressions/*.hpp"
-     "expressions/*.cpp"
+     "ast/expressions/*.hpp"
+     "ast/expressions/*.cpp"
 )
 set(compiler_srcs
   main.cpp
@@ -27,10 +31,10 @@ set(compiler_srcs
   symbol_table.cpp
   ${expressions_src}
   ${shared_src}
+  ${ast_src}
   ${BISON_Parser_OUTPUTS}
   ${FLEX_Scanner_OUTPUTS}
 )
-source_group("Calc" FILES ${compiler_srcs})
 
 add_executable(cpsl ${compiler_srcs})
 target_link_libraries(cpsl ${BISON_LIBRARIES})
