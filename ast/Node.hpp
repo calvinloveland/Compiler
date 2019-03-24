@@ -4,5 +4,6 @@
 
 class Node {
 public:
-    virtual void emit();
+    Node(){}
+    virtual ~Node() = default;
 };

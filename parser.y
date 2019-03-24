@@ -8,6 +8,7 @@
 #include "symbol_table.hpp"
 #include "ast/Program.hpp"
 #include "ast/Block.hpp"
+#include "ast/statements/Statement.hpp"
 #include "ast/StatementSequence.hpp"
 #include "ast/statements/Stop.hpp"
 #include "ast/expressions/UnaryMinus.hpp"
@@ -23,7 +24,11 @@ void yyerror(const char*);
 {
 float val;
 char* id;
-Node* node_ptr;
+ast::Program* program_ptr;
+ast::Block* block_ptr;
+ast::StatementSequence* statementSequence_ptr;
+ast::Expression* expression_ptr;
+ast::Statement* statement_ptr;
 }
 
 %token SNOTEQUAL
@@ -109,22 +114,22 @@ Node* node_ptr;
 %right UNARYMINUS
 %right STILDE
 
-%type <node_ptr> Program
-%type <node_ptr> Block
-%type <node_ptr> StatementSequence
-%type <node_ptr> Statement
-%type <node_ptr> Expression
-%type <node_ptr> Assignment
-%type <node_ptr> IfStatement
-%type <node_ptr> RepeatStatement
-%type <node_ptr> ForStatement
-%type <node_ptr> StopStatement 
-%type <node_ptr> ReturnStatement
-%type <node_ptr> ReadStatement
-%type <node_ptr> WriteStatement
-%type <node_ptr> ProcedureCall
-%type <node_ptr> NullStatement
-%type <node_ptr> WhileStatement
+%type <program_ptr> Program
+%type <block_ptr> Block
+%type <statementSequence_ptr> StatementSequence
+%type <statement_ptr> Statement
+%type <expression_ptr> Expression
+%type <statement_ptr> Assignment
+%type <statement_ptr> IfStatement
+%type <statement_ptr> RepeatStatement
+%type <statement_ptr> ForStatement
+%type <statement_ptr> StopStatement 
+%type <statement_ptr> ReturnStatement
+%type <statement_ptr> ReadStatement
+%type <statement_ptr> WriteStatement
+%type <statement_ptr> ProcedureCall
+%type <statement_ptr> NullStatement
+%type <statement_ptr> WhileStatement
 
 
 
