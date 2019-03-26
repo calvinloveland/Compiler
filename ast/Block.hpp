@@ -1,10 +1,13 @@
+#pragma once
+
 #include "Node.hpp"
+#include "StatementSequence.hpp"
 
 namespace ast {
 	class Block : public Node {
 	public:
-		Block(Node *sl) : statementList(sl) {}
-
-		Node *statementList;
+		Block(StatementSequence *sl) : statementList(sl) {}
+		void emit(){statementList->emit();}
+		StatementSequence *statementList;
 	};
 }

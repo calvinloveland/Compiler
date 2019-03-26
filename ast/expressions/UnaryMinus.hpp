@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Expression.hpp"
 
 namespace ast {

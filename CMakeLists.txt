@@ -29,12 +29,15 @@ set(compiler_srcs
   main.cpp
   symbol_table.hpp
   symbol_table.cpp
+
+  ast/Program.hpp
+
   ${expressions_src}
   ${shared_src}
   ${ast_src}
   ${BISON_Parser_OUTPUTS}
   ${FLEX_Scanner_OUTPUTS}
-)
+      )
 
 add_executable(cpsl ${compiler_srcs})
 target_link_libraries(cpsl ${BISON_LIBRARIES})

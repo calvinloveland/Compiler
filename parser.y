@@ -2,26 +2,18 @@
 #include <iostream>
 #include <map>
 
-#include "ast/expressions/Expression.hpp"
-#include "ast/expressions/Factory.hpp"
-#include "ast/Node.hpp"
-#include "symbol_table.hpp"
-#include "ast/Program.hpp"
-#include "ast/Block.hpp"
-#include "ast/statements/Statement.hpp"
-#include "ast/StatementSequence.hpp"
-#include "ast/statements/Stop.hpp"
-#include "ast/expressions/UnaryMinus.hpp"
-#include "ast/expressions/Equal.hpp"
-#include "ast/expressions/NotEqual.hpp"
-
+#include "includes.hpp"
 
 extern int yylex();
 void yyerror(const char*);
+
+std::shared_ptr<ast::Program> pNode;
+
 %}
 
 %union
 {
+
 float val;
 char* id;
 ast::Program* program_ptr;
@@ -29,6 +21,7 @@ ast::Block* block_ptr;
 ast::StatementSequence* statementSequence_ptr;
 ast::Expression* expression_ptr;
 ast::Statement* statement_ptr;
+ast::Stop* stop_ptr;
 }
 
 %token SNOTEQUAL
@@ -123,7 +116,7 @@ ast::Statement* statement_ptr;
 %type <statement_ptr> IfStatement
 %type <statement_ptr> RepeatStatement
 %type <statement_ptr> ForStatement
-%type <statement_ptr> StopStatement 
+%type <stop_ptr> StopStatement
 %type <statement_ptr> ReturnStatement
 %type <statement_ptr> ReadStatement
 %type <statement_ptr> WriteStatement
@@ -135,7 +128,7 @@ ast::Statement* statement_ptr;
 
 %%
 
-Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n"; $$ = new ast::Program($5);};
+Program : OptConstantDecl OptTypeDecl OptVarDecl OptFuncOrProcDecl Block SPERIOD {std::cerr << "Program\n"; pNode = std::make_shared<ast::Program>($5);};
 
 OptConstantDecl : KCONST SubConstantDecl {}
 		|
@@ -217,7 +210,7 @@ OptIdentifier : SCOMMA IDENTIFIER OptIdentifier
 	      |
 	      ;
 
-StatementSequence : Statement {$$ = $1;}
+StatementSequence : Statement {$$ = ast::MakeStatementSequence($1);}
 		  | Statement SSEMICOLON StatementSequence {$$ = ast::MakeStatementSequence($1,$3);}
 		  ;
 

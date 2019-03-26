@@ -14,7 +14,7 @@ namespace ast {
 
         bool isConst() { return false; }
 
-        virtual float value();
+        virtual float value(){return 0;}
 
         Expression *l;
         Expression *r;

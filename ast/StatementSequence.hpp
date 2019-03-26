@@ -1,27 +1,28 @@
-#include "Node.hpp"
+#pragma once
+
+#include "statements/Statement.hpp"
+#include "StatementSequence.hpp"
 #include <vector>
 
 namespace ast {
 	class StatementSequence : public Node {
 	public:
-		StatementSequence(Node *n) { add(n); }
+		StatementSequence(Statement *n) { add(n); }
 
-		void add(Node *n) { statements.push_back(n); }
+		void add(Statement *n) { statements.push_back(n); }
 
-		std::vector<Node *> statements;
+		void emit(){
+		    for(Statement* s : statements){
+		    s->emit();
+		}
+		}
+
+		std::vector<Statement *> statements;
 
 	};
 
 
-	StatementSequence *MakeStatementSequence(Node *statement, Node *statementSequence) {
-		StatementSequence *ss = dynamic_cast<StatementSequence *>(statementSequence);
-		if (ss) {
-			ss->add(statement);
-			return ss;
+	StatementSequence *MakeStatementSequence(Statement *statement, StatementSequence *statementSequence);
 
-		} else {
-			return new StatementSequence(statement);
-		}
-
-	}
+    StatementSequence *MakeStatementSequence(Statement *statement);
 }
