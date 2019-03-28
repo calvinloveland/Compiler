@@ -3,10 +3,12 @@
 namespace ast {
     StatementSequence *MakeStatementSequence(Statement *statement, StatementSequence *statementSequence) {
         if (statementSequence) {
-            statementSequence->add(statement);
+            if (statement) {
+                statementSequence->add(statement);
+            }
             return statementSequence;
 
-        } else {
+        } else if (statement) {
             return new StatementSequence(statement);
         }
     }

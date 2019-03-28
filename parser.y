@@ -255,7 +255,7 @@ ReturnStatement : KRETURN OptExpression;
 
 ReadStatement : KREAD SOPENPAREN LValue OptLValue SCLOSEPAREN ;
 
-WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN {std::cerr<<"WriteStatement\n";};
+WriteStatement : KWRITE SOPENPAREN Expression OptAddExpression SCLOSEPAREN {std::cerr<<"WriteStatement\n"; $$ = new WriteStatement(MakeExpressionList($3,$4));};
 
 ProcedureCall : IDENTIFIER SOPENPAREN OptExpressions SCLOSEPAREN;
 

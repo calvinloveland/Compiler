@@ -3,6 +3,8 @@
 #include "../Node.hpp"
 
 namespace ast {
+    enum ExpressionTypes {STRING, INT};
+
     class Expression : public Node {
     public:
         Expression() {}

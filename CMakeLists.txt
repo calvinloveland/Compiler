@@ -27,8 +27,8 @@ file(GLOB expressions_src
 )
 set(compiler_srcs
   main.cpp
-  symbol_table.hpp
-  symbol_table.cpp
+        globals/symbol_table.hpp
+        globals/symbol_table.cpp
 
   ast/Program.hpp
 

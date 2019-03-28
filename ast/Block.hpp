@@ -7,7 +7,7 @@ namespace ast {
 	class Block : public Node {
 	public:
 		Block(StatementSequence *sl) : statementList(sl) {}
-		void emit(){statementList->emit();}
+		void emit(){std::cerr<<"Emitting Block"<<std::endl; statementList->emit();}
 		StatementSequence *statementList;
 	};
 }

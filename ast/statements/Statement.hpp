@@ -6,8 +6,8 @@
 namespace ast{
 class Statement: public Node{
 public:
-    virtual void emit(){
-        std::cout << "PUT MIPS HERE";
+    void emit(){
+        std::cerr << "This should be a specific derived" << std::endl;
     }
 };
 }
